@@ -20,18 +20,19 @@ StatusBar.setBackgroundColor(barBg, true);
 StatusBar.setBarStyle(barStyle, true);
 
 //页面
-import Main from '../../App';
-import Main2 from '../components/App';
+import App from '../../App';
+import Flatlist from '../components/flatlist';
+import ReactNativeStorage from '../components/reactNativeStorage';
 
 const screens = {
-	Main: {
-		screen: Main,
-		navigationOptions: {
-			header: null,
-		}
+	App: {
+		screen: App,
 	},
-	Main2: {
-		screen: Main2
+	Flatlist: {
+		screen: Flatlist
+	},
+	ReactNativeStorage: {
+		screen: ReactNativeStorage
 	},
 };
 
@@ -46,7 +47,12 @@ const Navigator = StackNavigator(screens, {
 			paddingTop: 20,
 			backgroundColor: navBg,
 			elevation: .5, //立体阴影
+			//position:'absolute',//定位。
+			//top:0,
+			//zIndex:99,
+			//width:'100%',
 		},
+		headerTintColor:'blue',
 	},
 	mode: 'card',
 	transitionConfig: () => ({
@@ -55,7 +61,7 @@ const Navigator = StackNavigator(screens, {
 			easing: Easing.out(Easing.poly(4)),
 			timing: Animated.timing,
 		},
-		//转场动画
+		//转场动画--forHorizontal,forVertical,forFadeFromBottomAndroid
 		screenInterpolator: StackViewStyleInterpolator.forHorizontal,
 	})
 });

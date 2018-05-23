@@ -13,24 +13,17 @@ import {
 	Text,
 	View,
 	Alert,
-	TextInput,
-	Keyboard,
 	TouchableHighlight,
 	TouchableWithoutFeedback,
 } from 'react-native';
-
-const instructions = Platform.select({
-	ios: 'Press Cmd+R to reload,\n' +
-		'Cmd+D or shake for dev menu',
-	android: 'Double tap R on your keyboard to reload,\n' +
-		'Shake or press menu button for dev menu',
-});
+//渐变背景
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = {};
 const RNAlert = Alert.alert;
 let navigate;
 export default class App extends Component < Props > {
-	
+
 	constructor(props) {
 		super(props)
 		this.state = {
@@ -38,7 +31,7 @@ export default class App extends Component < Props > {
 		}
 		navigate = this.props.navigation.navigate;
 	}
-	
+
 	static navigationOptions = ({
 		navigation
 	}) => {
@@ -57,8 +50,10 @@ export default class App extends Component < Props > {
 				alignSelf: 'center',
 				flex: 1,
 				textAlign: 'center',
+				color: 'black'
 			},
 			headerRight: view,
+			header: titles.params ? '' : '', //是否显示header
 		})
 	}
 
@@ -88,12 +83,13 @@ export default class App extends Component < Props > {
 
 	//失去焦点
 	_InputBlur() {
-		this.refs.input1.blur();
+		//this.refs.input1.blur();
+		this._navigationTo();
 	}
 
 	//跳转到第二页
 	_navigationTo() {
-		navigate('Main2', {
+		navigate('ReactNativeStorage', {
 			name: "还是首页(●'◡'●)"
 		});
 	}
@@ -102,38 +98,12 @@ export default class App extends Component < Props > {
 		//<StatusBar translucent={true} backgroundColor="white" barStyle ='dark-content'/>
 		return(
 			<TouchableWithoutFeedback onPress={this._InputBlur.bind(this)}>
-				<View style={styles.container}>
-				    
-			       	<Text style={styles.welcome}>
-			          Welcome to React Native!
-			        </Text>
-			        <Text style={styles.instructions}>
-			          To get started, edit App.js
-			        </Text>
-			        <Text style={styles.instructions}>
-			          {instructions}
-			        </Text>
-			        <Text style={styles.helloWorld}>
-			        	hello,world!
-			        </Text>
-			        <TouchableHighlight onPress={this._navigationTo.bind(this)}>
-				        <Text style={{color:'green',marginTop:10}}>
-				        	测试react-native-storage存储,读取数据
-				        </Text>
-			        </TouchableHighlight>
-			        <TextInput
-			          ref='input1'
-			          style={styles.textinput}
-			          clearButtonMode="while-editing"
-			          underlineColorAndroid="transparent"
-			          placeholder="Type here to translate!"
-			          onChangeText={(text) => this.setState({text})}
-			        />
-			        
-			        <TouchableHighlight onPress={this._getInputValue.bind(this)}>
-			        	<Text style={styles.helloWorld}>点我获取input内容</Text>
-			        </TouchableHighlight >
-	      		</View>
+				<LinearGradient  colors={['red', 'white', 'green']} style={styles.linearGradient}>
+					<View style={styles.container}>
+					    <Text>{'内容'}</Text>
+				        
+		      		</View>
+	      		</LinearGradient>
       		</TouchableWithoutFeedback >
 		);
 	}
@@ -142,31 +112,12 @@ export default class App extends Component < Props > {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: 'center',
+		justifyContent: 'flex-start',
 		alignItems: 'center',
-		backgroundColor: '#F5FCFF',
-		padding: 10
-	},
-	welcome: {
-		fontSize: 20,
-		textAlign: 'center',
-		margin: 10,
-	},
-	instructions: {
-		textAlign: 'center',
-		color: '#333333',
-		marginBottom: 5,
-	},
-	helloWorld: {
-		textAlign: 'center',
-		color: 'red',
-		marginTop: 20
-	},
-	textinput: {
-		height: 40,
-		width: '100%',
-		borderBottomWidth: StyleSheet.hairlineWidth,
-		borderColor: 'rgba(23,43,32,.2)',
+		backgroundColor: 'transparent',
 		padding: 0
-	}
+	},
+	linearGradient: {
+		flex: 1,
+	},
 });

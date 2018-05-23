@@ -18,7 +18,12 @@ import {
 	Keyboard,
 	TouchableHighlight,
 	TouchableWithoutFeedback,
+	StatusBar,
 } from 'react-native';
+
+StatusBar.setTranslucent(true);
+StatusBar.setBackgroundColor('rgba(255,255,255,0)', true);
+StatusBar.setBarStyle('dark-content', true);
 
 type Props = {};
 const RNAlert = Alert.alert;
@@ -30,18 +35,25 @@ export default class App extends Component < Props > {
 			value: '',
 		}
 	}
+
 	static navigationOptions = ({
 		navigation
 	}) => {
-		//console.warn(navigation);
+		console.warn(navigation);
 		return {
 			headerTitle: navigation.state.params.name, //前一个页面传来的对象的name属性
 			headerTitleStyle: {
 				alignSelf: 'center',
 				textAlign: 'center',
 				flex: 1,
+				color: 'black',
 			},
 			headerRight: < View / > ,
+			headerStyle: {
+				paddingTop: 20,
+				backgroundColor: 'red',
+				elevation: .5, //立体阴影
+			},
 		}
 	}
 
@@ -153,7 +165,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-start', //flex-start,flex-end,center,space-between,space-around,space-evenly
 		alignItems: 'center',
 		backgroundColor: '#F5FCFF',
-		padding: 10
+		padding: 0
 	},
 	welcome: {
 		fontSize: 20,
