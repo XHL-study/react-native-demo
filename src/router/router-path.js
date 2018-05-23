@@ -1,4 +1,4 @@
-"顶部导航栏"
+
 import { StackNavigator } from 'react-navigation';
 import { StatusBar, Animated, Easing } from 'react-native';
 //使用react-native-storage，存储数据
@@ -9,7 +9,7 @@ import StackViewStyleInterpolator from 'react-navigation/src/views/StackView/Sta
 //转场动画-微调
 //StackViewTransitionConfigs.js
 
-//导航栏
+//导航栏-样式
 const barBg = 'rgba(255,255,255,0)',
 	navBg = 'white',
 	barStyle = 'dark-content';
