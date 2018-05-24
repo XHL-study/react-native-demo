@@ -7,6 +7,7 @@
 import React, {
 	Component
 } from 'react';
+
 import {
 	Platform,
 	StyleSheet,
@@ -15,12 +16,53 @@ import {
 	Alert,
 	TouchableHighlight,
 	TouchableWithoutFeedback,
+	StatusBar,
+	BackHandler
 } from 'react-native';
+
+import ScreenUtil from './src/utils/screenUtil'
+
 //渐变背景
 import LinearGradient from 'react-native-linear-gradient';
 
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'flex-start',
+		alignItems: 'center',
+		backgroundColor: 'transparent',
+		padding: 0,
+	},
+	linearGradient: {
+		flex: 1,
+	},
+	headerTitleStyle: {
+		alignSelf: 'center',
+		flex: 1,
+		textAlign: 'center',
+		color: 'black'
+	},
+});
+
+const pageCfg = {
+	bar: {
+		barBg: 'rgba(255,255,255,0)',
+		barStyle: 'dark-content',
+		barTranslucent: true,//沉浸式
+		barBackgroundColorAnimate: false,
+		barStyleColorAnimate: false,
+	},
+	page: {
+		title: '首页',
+		viewPaddingTop: 0,
+	},
+	linearGradient: {
+		colors: ['red', 'white', 'green']
+	},
+}
+//<StatusBar translucent={true} backgroundColor="white" barStyle ='dark-content'/>
+
 type Props = {};
-const RNAlert = Alert.alert;
 let navigate;
 export default class App extends Component < Props > {
 
@@ -30,61 +72,47 @@ export default class App extends Component < Props > {
 			text: '',
 		}
 		navigate = this.props.navigation.navigate;
+		//此处设置状态栏，防止按返回推出应用后再次进入状态栏效果设置失败。
+		StatusBar.setTranslucent(pageCfg.bar.barTranslucent); //沉浸式
+		StatusBar.setBackgroundColor(pageCfg.bar.barBg, pageCfg.bar.barBackgroundColorAnimate);
+		StatusBar.setBarStyle(pageCfg.bar.barStyle, pageCfg.bar.barStyleColorAnimate);
+		pageCfg.bar.viewPaddingTop = ScreenUtil.PAGE_PADDING_TOP(pageCfg.bar.barTranslucent);
+		console.warn("PAGE_PADDING_TOP: ", pageCfg.bar.viewPaddingTop);
 	}
 
 	static navigationOptions = ({
 		navigation
 	}) => {
 		let view = null;
-		let titles = navigation.state;
-		if(titles.params) {
-			titles = titles.params.name;
+		let state = navigation.state;
+		let title = pageCfg.title;
+		console.warn('navigationParams：', navigation)
+		if(state.params) {
+			title = title.params.name;
 			view = (<View />);
-		} else {
-			titles = '首页';
 		}
-
 		return({
-			headerTitle: titles, //前一个页面传来的对象的name属性
-			headerTitleStyle: {
-				alignSelf: 'center',
-				flex: 1,
-				textAlign: 'center',
-				color: 'black'
-			},
+			headerTitle: title, //前一个页面传来的对象的name属性
+			headerTitleStyle: styles.headerTitleStyle,
 			headerRight: view,
-			header: titles.params ? '' : '', //是否显示header
+			header: state.params ? '' : null, //是否显示header
 		})
 	}
 
-	componentWillMount() {}
-
-	componentWillUnmount() {}
-
-	//获取inputvalue
-	_getInputValue() {
-		this._InputBlur();
-		var AlertText = 'inputValue = ' + this.state.text;
-		RNAlert(
-			'Tip getInputValue',
-			AlertText, [{
-					text: '取消',
-					onPress: () => {
-						alert('哈哈');
-					}
-				},
-				{
-					text: '确定',
-					onPress: () => {}
-				},
-			]
-		)
+	componentWillMount() {
+		BackHandler.addEventListener('hardwareBackPress', function() {
+			// this.onMainScreen and this.goBack are just examples, you need to use your own implementation here
+			// Typically you would use the navigator here to go to the last state.
+			console.warn('返回')
+			return false;
+		});
 	}
 
-	//失去焦点
-	_InputBlur() {
-		//this.refs.input1.blur();
-		this._navigationTo();
+	componentDidMount() {}
+
+	componentWillUnmount() {
+		console.warn('卸载组件');
+		BackHandler.removeEventListener('hardwareBackPress');
 	}
 
 	//跳转到第二页
@@ -97,9 +125,9 @@ export default class App extends Component < Props > {
 	render() {
 		//<StatusBar translucent={true} backgroundColor="white" barStyle ='dark-content'/>
 		return(
-			<TouchableWithoutFeedback onPress={this._InputBlur.bind(this)}>
-				<LinearGradient  colors={['red', 'white', 'green']} style={styles.linearGradient}>
-					<View style={styles.container}>
+			<TouchableWithoutFeedback>
+				<LinearGradient colors={pageCfg.linearGradient.colors} style={styles.linearGradient}>
+					<View style={[styles.container,{paddingTop:pageCfg.bar.viewPaddingTop}]}>
 					    <Text>{'内容'}</Text>
 				        
 		      		</View>
@@ -108,16 +136,3 @@ export default class App extends Component < Props > {
 		);
 	}
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-start',
-		alignItems: 'center',
-		backgroundColor: 'transparent',
-		padding: 0
-	},
-	linearGradient: {
-		flex: 1,
-	},
-});

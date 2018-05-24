@@ -18,6 +18,8 @@ import {
 	Keyboard,
 	TouchableHighlight,
 	TouchableWithoutFeedback,
+	TouchableOpacity,
+	TouchableNativeFeedback,
 	StatusBar,
 } from 'react-native';
 
@@ -39,7 +41,7 @@ export default class App extends Component < Props > {
 	static navigationOptions = ({
 		navigation
 	}) => {
-		console.warn(navigation);
+		console.warn('ReactNativeStorage:', navigation);
 		return {
 			headerTitle: navigation.state.params.name, //前一个页面传来的对象的name属性
 			headerTitleStyle: {
@@ -48,7 +50,18 @@ export default class App extends Component < Props > {
 				flex: 1,
 				color: 'black',
 			},
-			headerRight: < View / > ,
+			headerRight: (
+				<TouchableNativeFeedback  background={TouchableNativeFeedback.SelectableBackground()} onPress={()=>navigation.state.params.onHeaderPress()}>
+				<View style={{
+					width:50,
+					height:50,
+					backgroundColor:'green',
+					marginTop:20,
+				}}>
+					<Text>{'rightButton'}</Text>
+				</View>
+				</TouchableNativeFeedback>
+			),
 			headerStyle: {
 				paddingTop: 20,
 				backgroundColor: 'red',
@@ -59,9 +72,21 @@ export default class App extends Component < Props > {
 
 	componentWillMount() {
 		//console.warn('barHeight:'+StatusBar.currentHeight);
+		this.props.navigation.setParams({
+			onHeaderPress: this._onHeaderPress
+		})
+		console.warn("nparms:", this.props.navigation.state.params);
 	}
 
+	componentDidMount() {
+		//在static中使用this方法
+
+	}
 	componentWillUnmount() {}
+
+	_onHeaderPress() {
+		console.warn('点击了header');
+	}
 
 	//失去焦点
 	_InputBlur() {

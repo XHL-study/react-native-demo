@@ -1,23 +1,13 @@
 
 import { StackNavigator } from 'react-navigation';
-import { StatusBar, Animated, Easing } from 'react-native';
+import { Animated, Easing } from 'react-native';
 //使用react-native-storage，存储数据
-import '../utils/reactNativeStorage'
+import '../utils/reactNativeStorageUtil'
 
 //转场动画
 import StackViewStyleInterpolator from 'react-navigation/src/views/StackView/StackViewStyleInterpolator';
 //转场动画-微调
 //StackViewTransitionConfigs.js
-
-//导航栏-样式
-const barBg = 'rgba(255,255,255,0)',
-	navBg = 'white',
-	barStyle = 'dark-content';
-//<StatusBar translucent={true} backgroundColor="white" barStyle ='dark-content'/>
-
-StatusBar.setTranslucent(true);
-StatusBar.setBackgroundColor(barBg, true);
-StatusBar.setBarStyle(barStyle, true);
 
 //页面
 import App from '../../App';
@@ -45,7 +35,7 @@ const Navigator = StackNavigator(screens, {
 		animationEnabled: false,
 		headerStyle: {
 			paddingTop: 20,
-			backgroundColor: navBg,
+			backgroundColor: 'white',
 			elevation: .5, //立体阴影
 			//position:'absolute',//定位。
 			//top:0,
