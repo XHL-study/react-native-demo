@@ -1,5 +1,5 @@
 
-import { StackNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 import { Animated, Easing } from 'react-native';
 //使用react-native-storage，存储数据
 import '../utils/reactNativeStorageUtil'
@@ -13,6 +13,7 @@ import StackViewStyleInterpolator from 'react-navigation/src/views/StackView/Sta
 import App from '../../App';
 import Flatlist from '../components/flatlist';
 import ReactNativeStorage from '../components/reactNativeStorage';
+import Icons from '../components/icons';
 
 const screens = {
 	App: {
@@ -24,12 +25,15 @@ const screens = {
 	ReactNativeStorage: {
 		screen: ReactNativeStorage
 	},
+	Icons: {
+		screen: Icons
+	},
 };
 
-const Navigator = StackNavigator(screens, {
+const Navigator = createStackNavigator(screens, {
 	navigationOptions: {
 		headerTintColor: '#333333',
-		headerBackTitle: null, //ios右侧返回不显示标题
+		headerBackTitle: null, //ios左侧返回不显示标题
 		showIcon: true,
 		swipeEnabled: false,
 		animationEnabled: false,

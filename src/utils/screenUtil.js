@@ -6,7 +6,7 @@ export default {
 	onePixel: 1 / PixelRatio.get(),
 	STATUSBAR_HEIGHT: (Platform.OS === 'ios' ? 20 : 0),
 	APPBAR_HEIGHT: (Platform.OS === 'ios' ? 44 : 56),
-	PAGE_PADDING_TOP: function(setTranslucent) {
-		return setTranslucent ? 20 : (Platform.OS === 'ios' ? 20 : 0)
+	PAGE_PADDING_TOP: function(hasHeader) {
+		return hasHeader ? 0 : 20;
 	},
 }

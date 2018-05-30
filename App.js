@@ -4,135 +4,183 @@
  * @flow
  */
 
-import React, {
-	Component
-} from 'react';
+import React from 'react';
 
-import {
-	Platform,
-	StyleSheet,
-	Text,
-	View,
-	Alert,
-	TouchableHighlight,
-	TouchableWithoutFeedback,
-	StatusBar,
-	BackHandler
-} from 'react-native';
+import { Platform, Animated, StyleSheet, Text, View, Button, Alert, TouchableHighlight, TouchableWithoutFeedback, StatusBar, BackHandler, FlatList } from 'react-native';
 
-import ScreenUtil from './src/utils/screenUtil'
-
+import ScreenUtil from './src/utils/screenUtil';
+//导航栏view
+import NavView from './src/view/navigationView';
 //渐变背景
 import LinearGradient from 'react-native-linear-gradient';
+//数据
+import AppData from './src/data/appData';
+import GetData from './src/utils/axiosUtil';
+import { LoginSms } from './src/config/appConfig';
+import FlatListItem from './src/view/flatListItem';
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-start',
-		alignItems: 'center',
-		backgroundColor: 'transparent',
-		padding: 0,
-	},
-	linearGradient: {
-		flex: 1,
-	},
-	headerTitleStyle: {
-		alignSelf: 'center',
-		flex: 1,
-		textAlign: 'center',
-		color: 'black'
-	},
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    backgroundColor: 'transparent',
+    padding: 0,
+  },
+  linearGradient: {
+    flex: 1,
+  },
+  headerTitleStyle: {
+    alignSelf: 'center',
+    flex: 1,
+    textAlign: 'center',
+    color: 'black'
+  },
+  AnimatedFlatList:{
+  	width:'100%',
+  }
 });
 
 const pageCfg = {
-	bar: {
-		barBg: 'rgba(255,255,255,0)',
-		barStyle: 'dark-content',
-		barTranslucent: true,//沉浸式
-		barBackgroundColorAnimate: false,
-		barStyleColorAnimate: false,
-	},
-	page: {
-		title: '首页',
-		viewPaddingTop: 0,
-	},
-	linearGradient: {
-		colors: ['red', 'white', 'green']
-	},
+  bar: {
+    barBg: 'rgba(255,255,255,0)',
+    barStyle: 'dark-content', //dark
+    barTranslucent: true, //沉浸式
+    barBackgroundColorAnimate: false,
+    barStyleColorAnimate: false,
+  },
+  page: {
+    title: '首页',
+    viewPaddingTop: 0,
+    hasHeader: false,
+  },
+  linearGradient: {
+    colors: ['white', 'white', 'white']
+  },
 }
 //<StatusBar translucent={true} backgroundColor="white" barStyle ='dark-content'/>
 
 type Props = {};
 let navigate;
-export default class App extends Component < Props > {
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+export default class App extends React.PureComponent <Props> {
 
-	constructor(props) {
-		super(props)
-		this.state = {
-			text: '',
-		}
-		navigate = this.props.navigation.navigate;
-		//此处设置状态栏，防止按返回推出应用后再次进入状态栏效果设置失败。
-		StatusBar.setTranslucent(pageCfg.bar.barTranslucent); //沉浸式
-		StatusBar.setBackgroundColor(pageCfg.bar.barBg, pageCfg.bar.barBackgroundColorAnimate);
-		StatusBar.setBarStyle(pageCfg.bar.barStyle, pageCfg.bar.barStyleColorAnimate);
-		pageCfg.bar.viewPaddingTop = ScreenUtil.PAGE_PADDING_TOP(pageCfg.bar.barTranslucent);
-		console.warn("PAGE_PADDING_TOP: ", pageCfg.bar.viewPaddingTop);
-	}
+  constructor(props) {
+    super(props)
+    this.state = {
+      text: '',
+      flatListData: [],
+    }
+    navigate = this.props.navigation.navigate;
+    //设置状态栏
+    StatusBar.setTranslucent(pageCfg.bar.barTranslucent); //沉浸式
+    StatusBar.setBackgroundColor(pageCfg.bar.barBg, pageCfg.bar.barBackgroundColorAnimate);
+    StatusBar.setBarStyle(pageCfg.bar.barStyle, pageCfg.bar.barStyleColorAnimate);
+  }
 
-	static navigationOptions = ({
-		navigation
-	}) => {
-		let view = null;
-		let state = navigation.state;
-		let title = pageCfg.title;
-		console.warn('navigationParams：', navigation)
-		if(state.params) {
-			title = title.params.name;
-			view = (<View />);
-		}
-		return({
-			headerTitle: title, //前一个页面传来的对象的name属性
-			headerTitleStyle: styles.headerTitleStyle,
-			headerRight: view,
-			header: state.params ? '' : null, //是否显示header
-		})
-	}
+  static navigationOptions = ({navigation}) => {
 
-	componentWillMount() {
-		BackHandler.addEventListener('hardwareBackPress', function() {
-			// this.onMainScreen and this.goBack are just examples, you need to use your own implementation here
-			// Typically you would use the navigator here to go to the last state.
-			console.warn('返回')
-			return false;
-		});
-	}
+    const onLeftP = navigation.getParam('onLeftPress', '');
+    //console.warn('onLeftP',onLeftP);
 
-	componentDidMount() {}
+    let header = <NavView
+                          name="自定义导航器"
+                          headerConfig={ { headerTitle: '首页', 
+                          // headerRight:(<Button title="点我" onPress={()=>onLeftP(navigation)}/>), 
+                          } } />;
+    pageCfg.page.hasHeader = header !== null;
 
-	componentWillUnmount() {
-		console.warn('卸载组件');
-		BackHandler.removeEventListener('hardwareBackPress');
-	}
+    pageCfg.page.viewPaddingTop = ScreenUtil.PAGE_PADDING_TOP(pageCfg.page.hasHeader);
+    //console.warn("PAGE_PADDING_TOP: ", pageCfg.page.viewPaddingTop);
 
-	//跳转到第二页
-	_navigationTo() {
-		navigate('ReactNativeStorage', {
-			name: "还是首页(●'◡'●)"
-		});
-	}
+    return ({
+      header: header, //是否显示header
+      linearGradientStyle: {
+        backgroundColor: 'rgba(255,255,255,0)',
+      }
+    })
+  }
 
-	render() {
-		//<StatusBar translucent={true} backgroundColor="white" barStyle ='dark-content'/>
-		return(
-			<TouchableWithoutFeedback>
-				<LinearGradient colors={pageCfg.linearGradient.colors} style={styles.linearGradient}>
-					<View style={[styles.container,{paddingTop:pageCfg.bar.viewPaddingTop}]}>
-					    <Text>{'内容'}</Text>
-				        
-		      		</View>
-	      		</LinearGradient>
-      		</TouchableWithoutFeedback >
-		);
-	}
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', function() {
+      //console.warn('返回按钮')
+      return false;
+    });
+
+    //获取数据
+    this._data();
+  }
+
+  componentDidMount() {
+    let that = this;
+    setTimeout(function() {
+
+      that.props.navigation.setParams({
+        onLeftPress: that._onLeftPress,
+        pt: 'd',
+      })
+    },);
+  }
+
+  componentWillUnmount() {
+    //console.warn('卸载监听');
+    BackHandler.removeEventListener('hardwareBackPress');
+  }
+
+  _onLeftPress(nav) {
+    alert('点了左边');
+    nav.setParams({
+      pt: 'dt',
+    })
+  }
+
+  //FlatList
+  _data = () => {
+    let dt = AppData();
+    this.setState({
+    	flatListData:dt,
+    })
+  }
+
+  _onPressItem=(item)=>{
+  	//console.warn('onPressItem-id:',routerName);
+   navigate(item.routerName, {
+      name: "组件："+item.title
+    });
+  }
+
+  _renderItem = ({item}) => {
+    return (
+      <FlatListItem item={item} onPressItem={this._onPressItem}/>
+    )
+  }
+
+  _keyExtractor = (item, i) => {
+    return 'key_' + i
+  }
+
+
+  _ItemSeparatorComponent = (item) => {
+    return <View style={ { height: 2 } }></View>
+  }
+
+  render() {
+
+    //<SdtatusBar translucent={true} backgroundColor="white" barStyle ='dark-content'/>
+    return (
+      <LinearGradient
+                      colors={ pageCfg.linearGradient.colors }
+                      style={ styles.linearGradient }>
+        <View style={ [styles.container, { paddingTop: pageCfg.page.viewPaddingTop }] }>
+          <AnimatedFlatList
+          					style={styles.AnimatedFlatList}
+                            data={ this.state.flatListData }
+                            numColumns={ 1 }
+                            renderItem={ this._renderItem }
+                            keyExtractor={ this._keyExtractor }
+                            ItemSeparatorComponent={ this._ItemSeparatorComponent } />
+        </View>
+      </LinearGradient>
+      );
+  }
 }

@@ -23,9 +23,45 @@ import {
 	StatusBar,
 } from 'react-native';
 
-StatusBar.setTranslucent(true);
-StatusBar.setBackgroundColor('rgba(255,255,255,0)', true);
-StatusBar.setBarStyle('dark-content', true);
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'center', //flex-start,flex-end,center,space-between,space-around,space-evenly
+		alignItems: 'center',
+		backgroundColor: '#F5FCFF',
+		padding: 0
+	},
+	welcome: {
+		fontSize: 20,
+		textAlign: 'center',
+		margin: 10,
+	},
+	instructions: {
+		textAlign: 'center',
+		color: '#333333',
+		marginBottom: 5,
+	},
+	helloWorld: {
+		textAlign: 'center',
+		color: 'red',
+		marginTop: 20
+	},
+	textinput: {
+		height: 40,
+		width: '100%',
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		borderColor: 'rgba(23,43,32,.2)',
+		padding: 0
+	},
+	inputView: {
+		borderWidth: .2,
+		borderColor: 'green',
+		width: '80%',
+		marginTop: 10,
+		marginBottom: 10
+	}
+});
 
 type Props = {};
 const RNAlert = Alert.alert;
@@ -36,12 +72,16 @@ export default class App extends Component < Props > {
 			key: '',
 			value: '',
 		}
+		//
+		// StatusBar.setTranslucent(true);
+		// StatusBar.setBackgroundColor('rgba(255,255,255,0)', true);
+		// StatusBar.setBarStyle('dark-content', true);
 	}
 
 	static navigationOptions = ({
 		navigation
 	}) => {
-		console.warn('ReactNativeStorage:', navigation);
+		//console.warn('ReactNativeStorage:', navigation.state.params.dd);
 		return {
 			headerTitle: navigation.state.params.name, //前一个页面传来的对象的name属性
 			headerTitleStyle: {
@@ -64,8 +104,8 @@ export default class App extends Component < Props > {
 			),
 			headerStyle: {
 				paddingTop: 20,
-				backgroundColor: 'red',
-				elevation: .5, //立体阴影
+				backgroundColor: 'white',
+				elevation: StyleSheet.hairlineWidth, //立体阴影
 			},
 		}
 	}
@@ -73,9 +113,9 @@ export default class App extends Component < Props > {
 	componentWillMount() {
 		//console.warn('barHeight:'+StatusBar.currentHeight);
 		this.props.navigation.setParams({
-			onHeaderPress: this._onHeaderPress
+			onHeaderPress: this._onHeaderPress,
+			dd:'d',
 		})
-		console.warn("nparms:", this.props.navigation.state.params);
 	}
 
 	componentDidMount() {
@@ -85,7 +125,7 @@ export default class App extends Component < Props > {
 	componentWillUnmount() {}
 
 	_onHeaderPress() {
-		console.warn('点击了header');
+		//console.warn('点击了header');
 	}
 
 	//失去焦点
@@ -116,15 +156,15 @@ export default class App extends Component < Props > {
 		}).catch(err => {
 			// 如果没有找到数据且没有sync方法，
 			// 或者有其他异常，则在catch中返回
-			console.warn(err.message);
+			//console.warn(err.message);
 			switch(err.name) {
 				case 'NotFoundError':
 					// TODO;
-					console.warn("读取出错:" + NotFoundError);
+					//console.warn("读取出错:" + NotFoundError);
 					break;
 				case 'ExpiredError':
 					// TODO
-					console.warn("读取出错" + ExpiredError);
+					//console.warn("读取出错" + ExpiredError);
 					break;
 			}
 		})
@@ -183,42 +223,3 @@ export default class App extends Component < Props > {
 		);
 	}
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-start', //flex-start,flex-end,center,space-between,space-around,space-evenly
-		alignItems: 'center',
-		backgroundColor: '#F5FCFF',
-		padding: 0
-	},
-	welcome: {
-		fontSize: 20,
-		textAlign: 'center',
-		margin: 10,
-	},
-	instructions: {
-		textAlign: 'center',
-		color: '#333333',
-		marginBottom: 5,
-	},
-	helloWorld: {
-		textAlign: 'center',
-		color: 'red',
-		marginTop: 20
-	},
-	textinput: {
-		height: 40,
-		width: '100%',
-		borderBottomWidth: StyleSheet.hairlineWidth,
-		borderColor: 'rgba(23,43,32,.2)',
-		padding: 0
-	},
-	inputView: {
-		borderWidth: .2,
-		borderColor: 'green',
-		width: '80%',
-		marginTop: 10,
-		marginBottom: 10
-	}
-});
